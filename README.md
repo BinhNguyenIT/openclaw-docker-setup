@@ -1,13 +1,13 @@
 # openclaw-docker-setup
 
-Starter repo để triển khai OpenClaw bằng Docker/Compose.
+Repo Docker/Compose tối giản nhưng **bám docs chính thức** để chạy OpenClaw thật.
 
 ## Mục tiêu
 
-- Chạy OpenClaw trong container
-- Tách config/env rõ ràng
-- Có chỗ để mount workspace, data, logs
-- Dễ mở rộng thêm reverse proxy, watchdog, backup
+- Dùng **official image**: `ghcr.io/openclaw/openclaw`
+- Tách `openclaw-gateway` và `openclaw-cli` giống flow trong docs
+- Persist config + workspace bằng bind mounts
+- Có healthcheck và flow onboard/pairing rõ ràng
 
 ## Cấu trúc
 
@@ -29,10 +29,57 @@ openclaw-docker-setup/
     └── setup-plan.md
 ```
 
-## Bước tiếp theo
+## Cách dùng nhanh
 
-1. Chốt image/base strategy
-2. Điền biến môi trường
-3. Map volumes
-4. Thêm healthcheck
-5. Test `docker compose up`
+### 1) Chuẩn bị env
+
+```bash
+cp .env.example .env
+mkdir -p data/config data/workspace
+```
+
+### 2) Start gateway
+
+```bash
+docker compose up -d openclaw-gateway
+```
+
+### 3) Onboard / cấu hình ban đầu
+
+```bash
+docker compose run --rm openclaw-cli onboard
+```
+
+### 4) Lấy dashboard URL
+
+```bash
+docker compose run --rm openclaw-cli dashboard --no-open
+```
+
+Sau đó mở `http://127.0.0.1:18789/` và paste token vào Control UI nếu cần.
+
+## Lệnh hay dùng
+
+```bash
+docker compose logs -f openclaw-gateway
+docker compose run --rm openclaw-cli status
+docker compose run --rm openclaw-cli devices list
+docker compose run --rm openclaw-cli config set gateway.mode local
+docker compose run --rm openclaw-cli config set gateway.bind lan
+```
+
+## Notes quan trọng
+
+- Theo docs, Docker là **optional** nhưng hợp lý nếu muốn containerized gateway.
+- Gateway đang bind port theo kiểu an toàn hơn: `127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789`
+- `openclaw-cli` dùng `network_mode: service:openclaw-gateway` để gọi gateway qua loopback trong Docker namespace chung.
+- `--allow-unconfigured` chỉ để bootstrap ban đầu; xong rồi vẫn nên cấu hình auth/token tử tế.
+- Dữ liệu persistent nằm ở:
+  - `./data/config`
+  - `./data/workspace`
+
+## Tài liệu tham chiếu
+
+- Docker install: `/app/docs/install/docker.md`
+- GCP deployment example: `/app/docs/install/gcp.md`
+- Hetzner deployment example: `/app/docs/install/hetzner.md`

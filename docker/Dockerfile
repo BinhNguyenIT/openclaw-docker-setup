@@ -1,8 +1,16 @@
-FROM node:22-bookworm-slim
+# Optional custom image layer.
+# Repo này hiện dùng official image qua compose:
+#   ghcr.io/openclaw/openclaw:latest
+#
+# Nếu sau này cần bake thêm apt packages / browser deps / custom tooling,
+# có thể đổi compose sang build image từ file này.
 
-WORKDIR /app
+FROM ghcr.io/openclaw/openclaw:latest
 
-# Placeholder image for future OpenClaw install steps
-RUN apt-get update && apt-get install -y curl ca-certificates bash && rm -rf /var/lib/apt/lists/*
-
-CMD ["bash", "-lc", "echo 'OpenClaw container placeholder'; sleep infinity"]
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    bash \
+  && rm -rf /var/lib/apt/lists/*
+USER node
