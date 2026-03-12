@@ -68,6 +68,27 @@ docker compose run --rm openclaw-cli config set gateway.mode local
 docker compose run --rm openclaw-cli config set gateway.bind lan
 ```
 
+## Root override khi cần
+
+Mặc định stack này chạy theo hướng an toàn hơn. Nếu bạn muốn ép container chạy root cho mục đích dev/debug/convenience, dùng file override:
+
+```bash
+docker compose -f compose.yml -f compose.root.yml up -d
+```
+
+Hoặc chạy lệnh CLI với root override:
+
+```bash
+docker compose -f compose.yml -f compose.root.yml run --rm openclaw-cli status
+```
+
+`compose.root.yml` chỉ set:
+
+- `user: "0:0"` cho `openclaw-gateway`
+- `user: "0:0"` cho `openclaw-cli`
+
+Nên coi đây là **break-glass / convenience mode**, không phải mặc định lâu dài cho production.
+
 ## Notes quan trọng
 
 - Theo docs, Docker là **optional** nhưng hợp lý nếu muốn containerized gateway.

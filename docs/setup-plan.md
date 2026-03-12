@@ -26,3 +26,5 @@
 - cân nhắc reverse proxy / SSH tunnel / firewall
 - thêm backup cho `data/config` và `data/workspace`
 - cân nhắc pin version thay vì `latest`
+- giữ non-root làm mặc định
+- chỉ bật root qua `compose.root.yml` khi thật sự cần
