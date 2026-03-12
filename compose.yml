@@ -1,0 +1,15 @@
+services:
+  openclaw:
+    container_name: ${OPENCLAW_CONTAINER_NAME:-openclaw}
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${OPENCLAW_PORT:-8080}:8080"
+    volumes:
+      - ${OPENCLAW_WORKSPACE:-./workspace}:/workspace
+      - ${OPENCLAW_DATA:-./data}:/data
+      - ${OPENCLAW_LOGS:-./logs}:/logs
+    restart: unless-stopped

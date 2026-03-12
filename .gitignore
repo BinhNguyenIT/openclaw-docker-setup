@@ -1,0 +1,6 @@
+.env
+workspace/
+data/
+logs/
+*.local
+.DS_Store
