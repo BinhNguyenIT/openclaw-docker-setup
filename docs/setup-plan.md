@@ -6,7 +6,7 @@
 - thêm scripts cơ bản
 
 ## Phase 2 - Real OpenClaw runtime
-- dùng official image `ghcr.io/openclaw/openclaw:latest`
+- dùng official image `ghcr.io/openclaw/openclaw:2026.3.8`
 - tách `openclaw-gateway` + `openclaw-cli`
 - bind mount `OPENCLAW_CONFIG_DIR` -> `/home/node/.openclaw`
 - bind mount `OPENCLAW_WORKSPACE_DIR` -> `/home/node/.openclaw/workspace`
@@ -25,6 +25,6 @@
 - set token/auth tử tế
 - cân nhắc reverse proxy / SSH tunnel / firewall
 - thêm backup cho `data/config` và `data/workspace`
-- cân nhắc pin version thay vì `latest`
+- mặc định pin `2026.3.8` để setup ổn định, dễ reproduce, dễ debug; chỉ đổi khi đã test upgrade
 - giữ non-root làm mặc định
 - chỉ bật root qua `compose.root.yml` khi thật sự cần
