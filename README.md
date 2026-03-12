@@ -68,6 +68,24 @@ docker compose run --rm openclaw-cli config set gateway.mode local
 docker compose run --rm openclaw-cli config set gateway.bind lan
 ```
 
+## CLIProxyAPI add-on
+
+Repo này có thể chạy thêm một container **CLIProxyAPI** như sidecar/service phụ để cung cấp endpoint tương thích OpenAI/Gemini/Claude/Codex cho CLI tools.
+
+Quick start:
+
+```bash
+mkdir -p data/cli-proxy-api/auths data/cli-proxy-api/logs
+cp config/cli-proxy-api.example.yaml data/cli-proxy-api/config.yaml
+docker compose up -d cli-proxy-api
+```
+
+Docs chi tiết:
+
+- `docs/cli-proxy-api.md`
+
+Mặc định các port của CLIProxyAPI trong repo này đều bind vào `127.0.0.1` để tránh expose nhầm ra ngoài.
+
 ## Root override khi cần
 
 Mặc định stack này chạy theo hướng an toàn hơn. Nếu bạn muốn ép container chạy root cho mục đích dev/debug/convenience, dùng file override:

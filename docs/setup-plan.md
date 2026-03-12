@@ -28,3 +28,9 @@
 - mặc định pin `2026.3.8` để setup ổn định, dễ reproduce, dễ debug; chỉ đổi khi đã test upgrade
 - giữ non-root làm mặc định
 - chỉ bật root qua `compose.root.yml` khi thật sự cần
+
+## Phase 5 - Optional CLIProxyAPI sidecar
+- thêm service `cli-proxy-api` như một container phụ trợ cho OpenAI/Gemini/Claude/Codex-compatible proxy use cases
+- mount config/auth/logs riêng dưới `data/cli-proxy-api/`
+- bind localhost mặc định cho các port CLIProxyAPI để tránh expose nhầm
+- thêm doc setup riêng cho management key, api keys và provider config
