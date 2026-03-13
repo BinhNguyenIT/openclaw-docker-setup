@@ -2,6 +2,12 @@
 
 This repo can run a second OpenClaw stack on the same machine by using a separate env file.
 
+Recommended layout for this repo:
+
+- instance 1 runs OpenClaw + the shared CLIProxyAPI sidecar
+- instance 2 runs only OpenClaw
+- both OpenClaw instances can point to the same CLIProxyAPI endpoint if you want one shared provider/auth layer
+
 ## Why it works
 
 The second instance uses separate values for:
@@ -10,9 +16,8 @@ The second instance uses separate values for:
 - container names
 - gateway port
 - config/workspace directories
-- CLIProxyAPI ports and data paths
 
-That keeps the two stacks isolated.
+That keeps the two OpenClaw stacks isolated while avoiding a second proxy container.
 
 ## Files added for instance 2
 
@@ -27,8 +32,6 @@ That keeps the two stacks isolated.
 ```bash
 cp .env.instance-2.example .env.instance-2
 mkdir -p data2/config data2/workspace
-mkdir -p data2/cli-proxy-api/auths data2/cli-proxy-api/logs
-cp config/cli-proxy-api.example.yaml data2/cli-proxy-api/config.yaml
 ```
 
 ## Start the second gateway
@@ -51,10 +54,10 @@ cp config/cli-proxy-api.example.yaml data2/cli-proxy-api/config.yaml
 
 The second OpenClaw gateway defaults to `http://127.0.0.1:18790/`.
 
-The second CLIProxyAPI defaults to:
+The shared CLIProxyAPI remains the one from instance 1, which by default exposes:
 
-- API: `127.0.0.1:8318`
-- management: `127.0.0.1:8086`
+- API: `127.0.0.1:8317`
+- management: `127.0.0.1:8085`
 
 ## Stop the second stack
 
@@ -65,5 +68,6 @@ The second CLIProxyAPI defaults to:
 ## Notes
 
 - Do not reuse `data/` for the second instance; use `data2/` or another separate path.
-- If you do not need CLIProxyAPI for instance 2, you can ignore those paths and ports.
+- In the recommended setup, instance 2 does not need its own CLIProxyAPI ports, auth dir, or config dir.
+- Sharing one CLIProxyAPI means both OpenClaw instances share the same provider auth/config layer.
 - Keep both stacks pinned and upgraded intentionally.

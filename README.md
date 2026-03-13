@@ -124,9 +124,8 @@ Cách này tách riêng:
 - container names
 - gateway port
 - config/workspace paths
-- CLIProxyAPI ports/paths
 
-nên 2 stack có thể sống song song mà không đè nhau.
+và cho phép **share cùng một CLIProxyAPI** của instance chính, nên 2 OpenClaw gateway có thể sống song song mà không cần nhân đôi proxy sidecar.
 
 ## Root override khi cần
 
