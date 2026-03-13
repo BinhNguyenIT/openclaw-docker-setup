@@ -16,6 +16,7 @@ Repo Docker/Compose tối giản nhưng **bám docs chính thức** để chạy
 openclaw-docker-setup/
 ├── README.md
 ├── .env.example
+├── .env.instance-2.example
 ├── .gitignore
 ├── compose.yml
 ├── compose.root.yml
@@ -29,10 +30,15 @@ openclaw-docker-setup/
 │   ├── down.sh
 │   ├── logs.sh
 │   ├── onboard.sh
-│   └── dashboard.sh
+│   ├── dashboard.sh
+│   ├── up-instance-2.sh
+│   ├── onboard-instance-2.sh
+│   ├── dashboard-instance-2.sh
+│   └── down-instance-2.sh
 └── docs/
     ├── setup-plan.md
-    └── cli-proxy-api.md
+    ├── cli-proxy-api.md
+    └── multi-instance.md
 ```
 
 ## Cách dùng nhanh
@@ -95,6 +101,32 @@ Docs chi tiết:
 Lưu ý: file chạy thật của CLIProxyAPI nên nằm ở `data/cli-proxy-api/config.yaml` và không cần commit lên repo.
 
 Mặc định các port của CLIProxyAPI trong repo này đều bind vào `127.0.0.1` để tránh expose nhầm ra ngoài.
+
+## Chạy thêm instance thứ 2
+
+Repo này giờ có sẵn mẫu để chạy **instance OpenClaw thứ 2 trên cùng máy** bằng env file riêng.
+
+Quick start:
+
+```bash
+cp .env.instance-2.example .env.instance-2
+mkdir -p data2/config data2/workspace
+./scripts/up-instance-2.sh
+```
+
+Docs chi tiết:
+
+- `docs/multi-instance.md`
+
+Cách này tách riêng:
+
+- `COMPOSE_PROJECT_NAME`
+- container names
+- gateway port
+- config/workspace paths
+- CLIProxyAPI ports/paths
+
+nên 2 stack có thể sống song song mà không đè nhau.
 
 ## Root override khi cần
 

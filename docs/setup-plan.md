@@ -34,3 +34,9 @@
 - mount config/auth/logs riêng dưới `data/cli-proxy-api/`
 - bind localhost mặc định cho các port CLIProxyAPI để tránh expose nhầm
 - thêm doc setup riêng cho management key, api keys và provider config
+
+## Phase 6 - Multi-instance support
+- thêm `.env.instance-2.example` để chạy stack OpenClaw thứ 2 trên cùng host
+- tách riêng project name, container names, port, config path, workspace path
+- thêm scripts helper cho up/onboard/dashboard/down của instance thứ 2
+- thêm doc ngắn cho flow multi-instance
