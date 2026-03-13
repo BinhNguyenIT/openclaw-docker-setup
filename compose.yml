@@ -65,7 +65,7 @@ services:
       - no-new-privileges:true
 
   cli-proxy-api:
-    image: ${CLI_PROXY_IMAGE:-eceasy/cli-proxy-api:latest}
+    image: ${CLI_PROXY_IMAGE:-eceasy/cli-proxy-api:v6.8.51}
     container_name: ${CLI_PROXY_CONTAINER_NAME:-cli-proxy-api}
     restart: unless-stopped
     environment:
@@ -81,3 +81,9 @@ services:
       - ${CLI_PROXY_CONFIG_PATH:-./data/cli-proxy-api/config.yaml}:/CLIProxyAPI/config.yaml
       - ${CLI_PROXY_AUTH_PATH:-./data/cli-proxy-api/auths}:/root/.cli-proxy-api
       - ${CLI_PROXY_LOG_PATH:-./data/cli-proxy-api/logs}:/CLIProxyAPI/logs
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8317/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s

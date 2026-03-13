@@ -2,6 +2,8 @@
 
 This repo can also run a local CLIProxyAPI container alongside OpenClaw.
 
+This document describes the local runtime setup only. The live config file is expected at `data/cli-proxy-api/config.yaml`, which is intentionally runtime-local and should usually stay out of git.
+
 ## What it does
 
 CLIProxyAPI provides OpenAI/Gemini/Claude/Codex-compatible endpoints for CLI tools and OAuth-backed provider access.
@@ -12,6 +14,7 @@ Upstream repo:
 ## Files used in this repo
 
 - Compose service: `compose.yml`
+- Default image tag in this repo: `eceasy/cli-proxy-api:v6.8.51`
 - Example config: `config/cli-proxy-api.example.yaml`
 - Runtime data dir: `./data/cli-proxy-api/`
 
@@ -52,7 +55,11 @@ All ports are bound to localhost by default:
   - `127.0.0.1:51121`
   - `127.0.0.1:11451`
 
-If you do not need the extra ports, we can trim this service down further.
+These extra ports are kept to stay close to the upstream container defaults. If your use case only needs the main API and management UI, you can trim them later.
+
+## Healthcheck
+
+The compose service now includes a basic HTTP healthcheck against `http://127.0.0.1:8317/healthz`.
 
 ## Security notes
 

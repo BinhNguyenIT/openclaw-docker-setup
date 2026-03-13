@@ -6,6 +6,7 @@ Repo Docker/Compose tối giản nhưng **bám docs chính thức** để chạy
 
 - Dùng **official image**: `ghcr.io/openclaw/openclaw:2026.3.8` (mặc định pin version)
 - Tách `openclaw-gateway` và `openclaw-cli` giống flow trong docs
+- Có thêm **CLIProxyAPI sidecar** và mặc định pin `eceasy/cli-proxy-api:v6.8.51`
 - Persist config + workspace bằng bind mounts
 - Có healthcheck và flow onboard/pairing rõ ràng
 
@@ -17,16 +18,21 @@ openclaw-docker-setup/
 ├── .env.example
 ├── .gitignore
 ├── compose.yml
+├── compose.root.yml
 ├── docker/
 │   └── Dockerfile
 ├── config/
-│   └── openclaw.example.env
+│   ├── openclaw.example.env
+│   └── cli-proxy-api.example.yaml
 ├── scripts/
 │   ├── up.sh
 │   ├── down.sh
-│   └── logs.sh
+│   ├── logs.sh
+│   ├── onboard.sh
+│   └── dashboard.sh
 └── docs/
-    └── setup-plan.md
+    ├── setup-plan.md
+    └── cli-proxy-api.md
 ```
 
 ## Cách dùng nhanh
@@ -36,7 +42,9 @@ openclaw-docker-setup/
 ```bash
 cp .env.example .env
 mkdir -p data/config data/workspace
-```
+``` 
+
+`data/` là runtime-local state, đang bị `.gitignore` bỏ qua. Những file như `data/cli-proxy-api/config.yaml` là file chạy thật trên máy local, không phải file cần commit lên repo.
 
 ### 2) Start gateway
 
@@ -84,6 +92,8 @@ Docs chi tiết:
 
 - `docs/cli-proxy-api.md`
 
+Lưu ý: file chạy thật của CLIProxyAPI nên nằm ở `data/cli-proxy-api/config.yaml` và không cần commit lên repo.
+
 Mặc định các port của CLIProxyAPI trong repo này đều bind vào `127.0.0.1` để tránh expose nhầm ra ngoài.
 
 ## Root override khi cần
@@ -110,9 +120,11 @@ Nên coi đây là **break-glass / convenience mode**, không phải mặc đị
 ## Notes quan trọng
 
 - Theo docs, Docker là **optional** nhưng hợp lý nếu muốn containerized gateway.
-- Repo này mặc định **pin `ghcr.io/openclaw/openclaw:2026.3.8`** thay vì dùng `latest`.
+- Repo này mặc định pin cả hai image chính:
+  - `ghcr.io/openclaw/openclaw:2026.3.8`
+  - `eceasy/cli-proxy-api:v6.8.51`
 - Lý do: setup ổn định hơn, dễ reproduce hơn, và debug dễ hơn khi có issue.
-- Nếu bạn thích sống nhanh với feature mới, vẫn có thể đổi `OPENCLAW_IMAGE` trong `.env`, nhưng nên coi đó là lựa chọn chủ động.
+- Nếu bạn thích sống nhanh với feature mới, vẫn có thể đổi `OPENCLAW_IMAGE` hoặc `CLI_PROXY_IMAGE` trong `.env`, nhưng nên coi đó là lựa chọn chủ động.
 - Gateway đang bind port theo kiểu an toàn hơn: `127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789`
 - `openclaw-cli` dùng `network_mode: service:openclaw-gateway` để gọi gateway qua loopback trong Docker namespace chung.
 - `--allow-unconfigured` chỉ để bootstrap ban đầu; xong rồi vẫn nên cấu hình auth/token tử tế.
