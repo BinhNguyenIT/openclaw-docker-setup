@@ -1,6 +1,7 @@
 .env
 workspace/
 data/
+mounts/
 logs/
 *.local
 .DS_Store

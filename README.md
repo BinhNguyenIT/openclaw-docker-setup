@@ -7,7 +7,7 @@ Repo Docker/Compose tối giản nhưng **bám docs chính thức** để chạy
 - Dùng **official image**: `ghcr.io/openclaw/openclaw:2026.3.8` (mặc định pin version)
 - Tách `openclaw-gateway` và `openclaw-cli` giống flow trong docs
 - Có thêm **CLIProxyAPI sidecar** và mặc định pin `eceasy/cli-proxy-api:v6.8.51`
-- Persist config + workspace bằng bind mounts
+- Persist state bằng bind mounts theo layout dễ nhìn trong repo
 - Có healthcheck và flow onboard/pairing rõ ràng
 
 ## Cấu trúc
@@ -41,16 +41,37 @@ openclaw-docker-setup/
     └── multi-instance.md
 ```
 
+## Runtime mount layout
+
+```text
+mounts/
+├── openclaw/
+│   └── root/
+│       └── workspace/
+└── cli-proxy-api/
+    ├── config/
+    │   └── config.yaml
+    ├── auths/
+    └── logs/
+```
+
+- `openclaw-gateway` và `openclaw-cli` cùng mount **một root duy nhất**:
+  - `./mounts/openclaw/root -> /home/node/.openclaw`
+- `cli-proxy-api` mount riêng config/auth/logs để nhìn service nào dùng gì là rõ ngay khi mở project.
+
+Bên trong `mounts/openclaw/root/` sẽ có luôn `workspace/` và các file state/config khác của OpenClaw.
+
 ## Cách dùng nhanh
 
 ### 1) Chuẩn bị env
 
 ```bash
 cp .env.example .env
-mkdir -p data/config data/workspace
-``` 
+mkdir -p mounts/openclaw/root/workspace
+mkdir -p mounts/cli-proxy-api/config mounts/cli-proxy-api/auths mounts/cli-proxy-api/logs
+```
 
-`data/` là runtime-local state, đang bị `.gitignore` bỏ qua. Những file như `data/cli-proxy-api/config.yaml` là file chạy thật trên máy local, không phải file cần commit lên repo.
+`mounts/` là runtime-local state, đang bị `.gitignore` bỏ qua. Những file như `mounts/cli-proxy-api/config/config.yaml` là file chạy thật trên máy local, không phải file cần commit lên repo.
 
 ### 2) Start gateway
 
@@ -89,8 +110,8 @@ Repo này có thể chạy thêm một container **CLIProxyAPI** như sidecar/se
 Quick start:
 
 ```bash
-mkdir -p data/cli-proxy-api/auths data/cli-proxy-api/logs
-cp config/cli-proxy-api.example.yaml data/cli-proxy-api/config.yaml
+mkdir -p mounts/cli-proxy-api/config mounts/cli-proxy-api/auths mounts/cli-proxy-api/logs
+cp config/cli-proxy-api.example.yaml mounts/cli-proxy-api/config/config.yaml
 docker compose up -d cli-proxy-api
 ```
 
@@ -98,7 +119,7 @@ Docs chi tiết:
 
 - `docs/cli-proxy-api.md`
 
-Lưu ý: file chạy thật của CLIProxyAPI nên nằm ở `data/cli-proxy-api/config.yaml` và không cần commit lên repo.
+Lưu ý: file chạy thật của CLIProxyAPI nên nằm ở `mounts/cli-proxy-api/config/config.yaml` và không cần commit lên repo.
 
 Mặc định các port của CLIProxyAPI trong repo này đều bind vào `127.0.0.1` để tránh expose nhầm ra ngoài.
 
@@ -110,7 +131,7 @@ Quick start:
 
 ```bash
 cp .env.instance-2.example .env.instance-2
-mkdir -p data2/config data2/workspace
+mkdir -p mounts/openclaw2/root/workspace
 ./scripts/up-instance-2.sh
 ```
 
@@ -123,7 +144,7 @@ Cách này tách riêng:
 - `COMPOSE_PROJECT_NAME`
 - container names
 - gateway port
-- config/workspace paths
+- OpenClaw root path
 
 và cho phép **share cùng một CLIProxyAPI** của instance chính, nên 2 OpenClaw gateway có thể sống song song mà không cần nhân đôi proxy sidecar.
 
@@ -159,9 +180,9 @@ Nên coi đây là **break-glass / convenience mode**, không phải mặc đị
 - Gateway đang bind port theo kiểu an toàn hơn: `127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789`
 - `openclaw-cli` dùng `network_mode: service:openclaw-gateway` để gọi gateway qua loopback trong Docker namespace chung.
 - `--allow-unconfigured` chỉ để bootstrap ban đầu; xong rồi vẫn nên cấu hình auth/token tử tế.
-- Dữ liệu persistent nằm ở:
-  - `./data/config`
-  - `./data/workspace`
+- Dữ liệu persistent chính nằm ở:
+  - `./mounts/openclaw/root`
+  - `./mounts/cli-proxy-api/`
 
 ## Upgrade version sau này
 
