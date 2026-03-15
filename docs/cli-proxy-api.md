@@ -2,7 +2,7 @@
 
 This repo can also run a local CLIProxyAPI container alongside OpenClaw.
 
-This document describes the local runtime setup only. The live config file is expected at `data/cli-proxy-api/config.yaml`, which is intentionally runtime-local and should usually stay out of git.
+This document describes the local runtime setup only. The live config file is expected at `mounts/cli-proxy-api/config/config.yaml`, which is intentionally runtime-local and should usually stay out of git.
 
 ## What it does
 
@@ -16,16 +16,16 @@ Upstream repo:
 - Compose service: `compose.yml`
 - Default image tag in this repo: `eceasy/cli-proxy-api:v6.8.51`
 - Example config: `config/cli-proxy-api.example.yaml`
-- Runtime data dir: `./data/cli-proxy-api/`
+- Runtime data dir: `./mounts/cli-proxy-api/`
 
 ## First-time setup
 
 ```bash
-mkdir -p data/cli-proxy-api/auths data/cli-proxy-api/logs
-cp config/cli-proxy-api.example.yaml data/cli-proxy-api/config.yaml
+mkdir -p mounts/cli-proxy-api/config mounts/cli-proxy-api/auths mounts/cli-proxy-api/logs
+cp config/cli-proxy-api.example.yaml mounts/cli-proxy-api/config/config.yaml
 ```
 
-Then edit `data/cli-proxy-api/config.yaml`:
+Then edit `mounts/cli-proxy-api/config/config.yaml`:
 
 - set a strong `remote-management.secret-key`
 - replace `api-keys` with your real client key(s)
@@ -65,5 +65,5 @@ The compose service now includes a basic HTTP healthcheck against `http://127.0.
 
 - Keep management access local unless you really need remote control.
 - Set a non-empty management key before using management routes.
-- Keep API keys and OAuth auth data under `./data/cli-proxy-api/` and back them up carefully.
+- Keep API keys and OAuth auth data under `./mounts/cli-proxy-api/` and back them up carefully.
 - If exposing beyond localhost, put it behind a reverse proxy / tunnel / firewall rules first.
