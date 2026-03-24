@@ -15,7 +15,7 @@ The second instance uses separate values for:
 - `COMPOSE_PROJECT_NAME`
 - container names
 - gateway port
-- config/workspace directories
+- OpenClaw root directory
 
 That keeps the two OpenClaw stacks isolated while avoiding a second proxy container.
 
@@ -31,7 +31,7 @@ That keeps the two OpenClaw stacks isolated while avoiding a second proxy contai
 
 ```bash
 cp .env.instance-2.example .env.instance-2
-mkdir -p data2/config data2/workspace
+mkdir -p mounts/openclaw2/root/workspace
 ```
 
 ## Start the second gateway
@@ -67,7 +67,7 @@ The shared CLIProxyAPI remains the one from instance 1, which by default exposes
 
 ## Notes
 
-- Do not reuse `data/` for the second instance; use `data2/` or another separate path.
+- Do not reuse the same OpenClaw root path for the second instance.
 - In the recommended setup, instance 2 does not need its own CLIProxyAPI ports, auth dir, or config dir.
 - Sharing one CLIProxyAPI means both OpenClaw instances share the same provider auth/config layer.
 - Keep both stacks pinned and upgraded intentionally.

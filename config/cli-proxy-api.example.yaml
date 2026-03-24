@@ -1,5 +1,5 @@
 # CLIProxyAPI example config for local Docker deployment
-# Copy to data/cli-proxy-api/config.yaml and edit as needed.
+# Copy to mounts/cli-proxy-api/config/config.yaml and edit as needed.
 
 host: "0.0.0.0"
 port: 8317

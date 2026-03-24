@@ -14,8 +14,7 @@ services:
       OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
       XDG_CONFIG_HOME: /home/node/.config
     volumes:
-      - ${OPENCLAW_CONFIG_DIR:-./data/config}:/home/node/.openclaw
-      - ${OPENCLAW_WORKSPACE_DIR:-./data/workspace}:/home/node/.openclaw/workspace
+      - ${OPENCLAW_ROOT_DIR:-./mounts/openclaw/root}:/home/node/.openclaw
     ports:
       - "127.0.0.1:${OPENCLAW_GATEWAY_PORT:-18789}:18789"
     command:
@@ -36,6 +35,24 @@ services:
       retries: 5
       start_period: 20s
 
+  ollama:
+    image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
+    container_name: ${OLLAMA_CONTAINER_NAME:-ollama}
+    restart: unless-stopped
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    ports:
+      - "127.0.0.1:${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ${OLLAMA_DATA_DIR:-./mounts/ollama/data}:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
   openclaw-cli:
     image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:2026.3.8}
     container_name: ${OPENCLAW_CLI_CONTAINER_NAME:-openclaw-cli}
@@ -54,8 +71,7 @@ services:
       openclaw-gateway:
         condition: service_started
     volumes:
-      - ${OPENCLAW_CONFIG_DIR:-./data/config}:/home/node/.openclaw
-      - ${OPENCLAW_WORKSPACE_DIR:-./data/workspace}:/home/node/.openclaw/workspace
+      - ${OPENCLAW_ROOT_DIR:-./mounts/openclaw/root}:/home/node/.openclaw
     entrypoint: ["node", "openclaw.mjs"]
     command: ["status"]
     cap_drop:
@@ -78,9 +94,9 @@ services:
       - "127.0.0.1:${CLI_PROXY_PORT_51121:-51121}:51121"
       - "127.0.0.1:${CLI_PROXY_PORT_11451:-11451}:11451"
     volumes:
-      - ${CLI_PROXY_CONFIG_PATH:-./data/cli-proxy-api/config.yaml}:/CLIProxyAPI/config.yaml
-      - ${CLI_PROXY_AUTH_PATH:-./data/cli-proxy-api/auths}:/root/.cli-proxy-api
-      - ${CLI_PROXY_LOG_PATH:-./data/cli-proxy-api/logs}:/CLIProxyAPI/logs
+      - ${CLI_PROXY_CONFIG_PATH:-./mounts/cli-proxy-api/config/config.yaml}:/CLIProxyAPI/config.yaml
+      - ${CLI_PROXY_AUTH_PATH:-./mounts/cli-proxy-api/auths}:/root/.cli-proxy-api
+      - ${CLI_PROXY_LOG_PATH:-./mounts/cli-proxy-api/logs}:/CLIProxyAPI/logs
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8317/healthz"]
       interval: 30s
