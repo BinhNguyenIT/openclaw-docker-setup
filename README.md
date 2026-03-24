@@ -4,7 +4,7 @@ Repo Docker/Compose tối giản nhưng **bám docs chính thức** để chạy
 
 ## Mục tiêu
 
-- Dùng **official image**: `ghcr.io/openclaw/openclaw:2026.3.8` (mặc định pin version)
+- Dùng **official image**: `ghcr.io/openclaw/openclaw:2026.3.23-2` (mặc định pin version)
 - Tách `openclaw-gateway` và `openclaw-cli` giống flow trong docs
 - Có thêm **CLIProxyAPI sidecar** và mặc định pin `eceasy/cli-proxy-api:v6.8.51`
 - Persist state bằng bind mounts theo layout dễ nhìn trong repo
@@ -210,7 +210,7 @@ Nên coi đây là **break-glass / convenience mode**, không phải mặc đị
 
 - Theo docs, Docker là **optional** nhưng hợp lý nếu muốn containerized gateway.
 - Repo này mặc định pin cả hai image chính:
-  - `ghcr.io/openclaw/openclaw:2026.3.8`
+  - `ghcr.io/openclaw/openclaw:2026.3.23-2`
   - `eceasy/cli-proxy-api:v6.8.51`
 - Lý do: setup ổn định hơn, dễ reproduce hơn, và debug dễ hơn khi có issue.
 - Nếu bạn thích sống nhanh với feature mới, vẫn có thể đổi `OPENCLAW_IMAGE` hoặc `CLI_PROXY_IMAGE` trong `.env`, nhưng nên coi đó là lựa chọn chủ động.
@@ -223,7 +223,7 @@ Nên coi đây là **break-glass / convenience mode**, không phải mặc đị
 
 ## Upgrade version sau này
 
-Khi cần bump khỏi `2026.3.8`, nên làm theo flow này:
+Khi cần bump khỏi `2026.3.23-2`, nên làm theo flow này:
 
 1. đổi `OPENCLAW_IMAGE` trong `.env` hoặc fallback trong `compose.yml`
 2. pull image mới và restart stack

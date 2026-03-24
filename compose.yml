@@ -1,6 +1,6 @@
 services:
   openclaw-gateway:
-    image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:2026.3.8}
+    image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:2026.3.23-2}
     container_name: ${OPENCLAW_GATEWAY_CONTAINER_NAME:-openclaw-gateway}
     restart: unless-stopped
     env_file:
@@ -54,7 +54,7 @@ services:
               capabilities: [gpu]
 
   openclaw-cli:
-    image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:2026.3.8}
+    image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:2026.3.23-2}
     container_name: ${OPENCLAW_CLI_CONTAINER_NAME:-openclaw-cli}
     profiles: ["tools"]
     env_file:
