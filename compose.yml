@@ -1,5 +1,8 @@
 services:
   openclaw-gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:2026.3.23-2}
     container_name: ${OPENCLAW_GATEWAY_CONTAINER_NAME:-openclaw-gateway}
     restart: unless-stopped
@@ -15,6 +18,8 @@ services:
       XDG_CONFIG_HOME: /home/node/.config
     volumes:
       - ${OPENCLAW_ROOT_DIR:-./mounts/openclaw/root}:/home/node/.openclaw
+      - ${OPENCLAW_CONFIG_DIR:-./mounts/openclaw/config}:/home/node/.config
+      - ${OPENCLAW_CACHE_DIR:-./mounts/openclaw/cache}:/home/node/.cache
     ports:
       - "127.0.0.1:${OPENCLAW_GATEWAY_PORT:-18789}:18789"
     command:
@@ -54,6 +59,9 @@ services:
               capabilities: [gpu]
 
   openclaw-cli:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     image: ${OPENCLAW_IMAGE:-ghcr.io/openclaw/openclaw:2026.3.23-2}
     container_name: ${OPENCLAW_CLI_CONTAINER_NAME:-openclaw-cli}
     profiles: ["tools"]
@@ -72,6 +80,8 @@ services:
         condition: service_started
     volumes:
       - ${OPENCLAW_ROOT_DIR:-./mounts/openclaw/root}:/home/node/.openclaw
+      - ${OPENCLAW_CONFIG_DIR:-./mounts/openclaw/config}:/home/node/.config
+      - ${OPENCLAW_CACHE_DIR:-./mounts/openclaw/cache}:/home/node/.cache
     entrypoint: ["node", "openclaw.mjs"]
     command: ["status"]
     cap_drop:

@@ -12,5 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     bash \
+    git \
+    gh \
+  && chown -R root:root /app/extensions \
   && rm -rf /var/lib/apt/lists/*
 USER node
