@@ -4,8 +4,10 @@ Repo Docker/Compose tối giản nhưng **bám docs chính thức** để chạy
 
 ## Mục tiêu
 
-- Dùng **official image**: `ghcr.io/openclaw/openclaw:2026.3.8` (mặc định pin version)
+- Dùng **official image**: `ghcr.io/openclaw/openclaw:2026.3.23-2` (mặc định pin version)
 - Tách `openclaw-gateway` và `openclaw-cli` giống flow trong docs
+- Bake sẵn CLI cơ bản (`git`, `gh`) trong custom image để recreate container không phải cài lại
+- Persist thêm `/home/node/.config` và `/home/node/.cache` để giữ auth/config/cache qua lần recreate
 - Có thêm **CLIProxyAPI sidecar** và mặc định pin `eceasy/cli-proxy-api:v6.8.51`
 - Persist state bằng bind mounts theo layout dễ nhìn trong repo
 - Có healthcheck và flow onboard/pairing rõ ràng
@@ -46,8 +48,10 @@ openclaw-docker-setup/
 ```text
 mounts/
 ├── openclaw/
-│   └── root/
-│       └── workspace/
+│   ├── root/
+│   │   └── workspace/
+│   ├── config/
+│   └── cache/
 ├── cli-proxy-api/
 │   ├── config/
 │   │   └── config.yaml
@@ -57,11 +61,15 @@ mounts/
     └── data/
 ```
 
-- `openclaw-gateway` và `openclaw-cli` cùng mount **một root duy nhất**:
+- `openclaw-gateway` và `openclaw-cli` cùng mount OpenClaw state + config/cache riêng:
   - `./mounts/openclaw/root -> /home/node/.openclaw`
+  - `./mounts/openclaw/config -> /home/node/.config`
+  - `./mounts/openclaw/cache -> /home/node/.cache`
+- Cách này giúp CLI/auth/cache vẫn còn sau khi recreate container.
 - `cli-proxy-api` mount riêng config/auth/logs để nhìn service nào dùng gì là rõ ngay khi mở project.
 
 Bên trong `mounts/openclaw/root/` sẽ có luôn `workspace/` và các file state/config khác của OpenClaw.
+`mounts/openclaw/config/` giữ các config/auth kiểu `gh auth login`, còn `mounts/openclaw/cache/` giữ cache runtime/browser/tooling để recreate container đỡ mất trạng thái phụ trợ.
 
 ## Cách dùng nhanh
 
@@ -70,6 +78,7 @@ Bên trong `mounts/openclaw/root/` sẽ có luôn `workspace/` và các file sta
 ```bash
 cp .env.example .env
 mkdir -p mounts/openclaw/root/workspace
+mkdir -p mounts/openclaw/config mounts/openclaw/cache
 mkdir -p mounts/cli-proxy-api/config mounts/cli-proxy-api/auths mounts/cli-proxy-api/logs
 mkdir -p mounts/ollama/data
 ```
@@ -79,6 +88,7 @@ mkdir -p mounts/ollama/data
 ### 2) Start gateway
 
 ```bash
+docker compose build openclaw-gateway openclaw-cli
 docker compose up -d openclaw-gateway
 ```
 
@@ -210,7 +220,7 @@ Nên coi đây là **break-glass / convenience mode**, không phải mặc đị
 
 - Theo docs, Docker là **optional** nhưng hợp lý nếu muốn containerized gateway.
 - Repo này mặc định pin cả hai image chính:
-  - `ghcr.io/openclaw/openclaw:2026.3.8`
+  - `ghcr.io/openclaw/openclaw:2026.3.23-2`
   - `eceasy/cli-proxy-api:v6.8.51`
 - Lý do: setup ổn định hơn, dễ reproduce hơn, và debug dễ hơn khi có issue.
 - Nếu bạn thích sống nhanh với feature mới, vẫn có thể đổi `OPENCLAW_IMAGE` hoặc `CLI_PROXY_IMAGE` trong `.env`, nhưng nên coi đó là lựa chọn chủ động.
@@ -223,7 +233,7 @@ Nên coi đây là **break-glass / convenience mode**, không phải mặc đị
 
 ## Upgrade version sau này
 
-Khi cần bump khỏi `2026.3.8`, nên làm theo flow này:
+Khi cần bump khỏi `2026.3.23-2`, nên làm theo flow này:
 
 1. đổi `OPENCLAW_IMAGE` trong `.env` hoặc fallback trong `compose.yml`
 2. pull image mới và restart stack

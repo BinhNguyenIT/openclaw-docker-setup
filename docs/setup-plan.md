@@ -6,9 +6,10 @@
 - thêm scripts cơ bản
 
 ## Phase 2 - Real OpenClaw runtime
-- dùng official image `ghcr.io/openclaw/openclaw:2026.3.8`
+- dùng official image `ghcr.io/openclaw/openclaw:2026.3.23-2`
 - tách `openclaw-gateway` + `openclaw-cli`
 - bind mount `OPENCLAW_ROOT_DIR` -> `/home/node/.openclaw`
+- persist thêm `OPENCLAW_CONFIG_DIR` -> `/home/node/.config` và `OPENCLAW_CACHE_DIR` -> `/home/node/.cache`
 - dùng một OpenClaw root dùng chung cho gateway + cli để state không bị split
 - bootstrap bằng `--allow-unconfigured`
 - thêm `/healthz` healthcheck
@@ -25,8 +26,9 @@
 - set token/auth tử tế
 - cân nhắc reverse proxy / SSH tunnel / firewall
 - thêm backup cho `mounts/openclaw/root` và `mounts/cli-proxy-api/`
-- mặc định pin `2026.3.8` để setup ổn định, dễ reproduce, dễ debug; chỉ đổi khi đã test upgrade
+- mặc định pin `2026.3.23-2` để setup ổn định, dễ reproduce, dễ debug; chỉ đổi khi đã test upgrade
 - giữ non-root làm mặc định
+- custom image bake sẵn CLI cơ bản (`git`, `gh`) để recreate container không phải cài lại
 - chỉ bật root qua `compose.root.yml` khi thật sự cần
 
 ## Phase 5 - Optional CLIProxyAPI sidecar
