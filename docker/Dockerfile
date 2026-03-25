@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     git \
     gh \
+    sqlite3 \
+  && npm install -g @tobilu/qmd \
   && chown -R root:root /app/extensions \
   && rm -rf /var/lib/apt/lists/*
 USER node

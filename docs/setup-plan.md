@@ -29,6 +29,7 @@
 - mặc định pin `2026.3.23-2` để setup ổn định, dễ reproduce, dễ debug; chỉ đổi khi đã test upgrade
 - giữ non-root làm mặc định
 - custom image bake sẵn CLI cơ bản (`git`, `gh`) để recreate container không phải cài lại
+- bake sẵn `sqlite3` + `qmd` để QMD backend không phụ thuộc cài tay trong container đang chạy
 - chỉ bật root qua `compose.root.yml` khi thật sự cần
 
 ## Phase 5 - Optional CLIProxyAPI sidecar
