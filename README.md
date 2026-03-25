@@ -7,6 +7,7 @@ Repo Docker/Compose tối giản nhưng **bám docs chính thức** để chạy
 - Dùng **official image**: `ghcr.io/openclaw/openclaw:2026.3.23-2` (mặc định pin version)
 - Tách `openclaw-gateway` và `openclaw-cli` giống flow trong docs
 - Bake sẵn CLI cơ bản (`git`, `gh`) trong custom image để recreate container không phải cài lại
+- Bake sẵn `sqlite3` + `qmd` trong image để memory backend không phụ thuộc cài tay sau mỗi lần recreate/restart
 - Persist thêm `/home/node/.config` và `/home/node/.cache` để giữ auth/config/cache qua lần recreate
 - Có thêm **CLIProxyAPI sidecar** và mặc định pin `eceasy/cli-proxy-api:v6.8.51`
 - Persist state bằng bind mounts theo layout dễ nhìn trong repo
@@ -66,6 +67,10 @@ mounts/
   - `./mounts/openclaw/config -> /home/node/.config`
   - `./mounts/openclaw/cache -> /home/node/.cache`
 - Cách này giúp CLI/auth/cache vẫn còn sau khi recreate container.
+- Với QMD, layout này cũng giữ lại:
+  - QMD SQLite index dưới `/home/node/.openclaw/agents/<agent>/qmd/xdg-cache/qmd/`
+  - downloaded model/cache dưới `/home/node/.cache`
+- Kết quả là restart/recreate container không phải tải lại model/index từ đầu, miễn là bạn không xoá `mounts/openclaw/root` và `mounts/openclaw/cache`.
 - `cli-proxy-api` mount riêng config/auth/logs để nhìn service nào dùng gì là rõ ngay khi mở project.
 
 Bên trong `mounts/openclaw/root/` sẽ có luôn `workspace/` và các file state/config khác của OpenClaw.
@@ -90,6 +95,15 @@ mkdir -p mounts/ollama/data
 ```bash
 docker compose build openclaw-gateway openclaw-cli
 docker compose up -d openclaw-gateway
+```
+
+Nếu bạn muốn dùng QMD memory backend bền vững qua restart/recreate, image custom trong repo này đã bake sẵn `sqlite3` và `qmd`, nên gateway không phải cài tay lại binary mỗi lần boot.
+
+Sau khi gateway đã lên, có thể cấu hình OpenClaw dùng QMD với binary path ổn định như:
+
+```bash
+docker compose run --rm openclaw-cli config set memory.backend qmd
+docker compose run --rm openclaw-cli config set memory.qmd.command /usr/local/bin/qmd
 ```
 
 ### 2.5) (Tuỳ chọn) start Ollama bằng GPU trong Docker
