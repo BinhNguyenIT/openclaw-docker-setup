@@ -12,9 +12,10 @@ This reinstalls/rebuilds QMD's node-llama-cpp in /home/node/.openclaw/tools/qmd
 so the live runtime matches the CUDA-enabled container environment.
 MSG
 
-# Ensure the CUDA image exists and the gateway is up so the shared volume layout is initialized.
+# Ensure the CUDA image exists, then stop the gateway before rebuilding the mounted QMD runtime.
+# Otherwise the running gateway can try to call qmd while node_modules is temporarily missing.
 docker compose "${COMPOSE_FILES[@]}" build openclaw-gateway openclaw-cli
-docker compose "${COMPOSE_FILES[@]}" up -d openclaw-gateway
+docker compose "${COMPOSE_FILES[@]}" stop openclaw-gateway || true
 
 docker compose "${COMPOSE_FILES[@]}" run --rm --entrypoint bash openclaw-cli -lc '
   set -euo pipefail
@@ -40,3 +41,5 @@ docker compose "${COMPOSE_FILES[@]}" run --rm --entrypoint bash openclaw-cli -lc
 
   node /home/node/.openclaw/tools/qmd/node_modules/.bin/node-llama-cpp inspect gpu
 '
+
+docker compose "${COMPOSE_FILES[@]}" up -d openclaw-gateway

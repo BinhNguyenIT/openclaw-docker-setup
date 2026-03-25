@@ -182,6 +182,7 @@ Nếu QMD runtime đang sống trong mounted volume `/home/node/.openclaw` và t
 Script này sẽ:
 - build + start stack theo `compose.cuda.yml`
 - repair chính runtime QMD đang được mount sống ở `/home/node/.openclaw/tools/qmd`
+- tạm dừng `openclaw-gateway` trong lúc rebuild để tránh race condition `qmd ENOENT`
 - reinstall `@tobilu/qmd` trong runtime đó
 - rebuild `node-llama-cpp` trong môi trường CUDA đang chạy
 - chạy lại `node-llama-cpp inspect gpu` để verify
