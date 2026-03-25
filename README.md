@@ -173,6 +173,19 @@ docker compose -f compose.yml -f compose.cuda.yml run --rm openclaw-cli \
   node /home/node/.openclaw/tools/qmd/node_modules/.bin/node-llama-cpp inspect gpu
 ```
 
+Nếu QMD runtime đang sống trong mounted volume `/home/node/.openclaw` và trước đó được cài ở image / môi trường CPU-only, chỉ build image CUDA thôi vẫn chưa đủ. Lúc đó hãy bootstrap lại runtime QMD ngay trong volume sống:
+
+```bash
+./scripts/bootstrap-qmd-cuda.sh
+```
+
+Script này sẽ:
+- build + start stack theo `compose.cuda.yml`
+- repair chính runtime QMD đang được mount sống ở `/home/node/.openclaw/tools/qmd`
+- reinstall `@tobilu/qmd` trong runtime đó
+- rebuild `node-llama-cpp` trong môi trường CUDA đang chạy
+- chạy lại `node-llama-cpp inspect gpu` để verify
+
 Notes thẳng thắn:
 - path này là **optional / experimental** cho QMD GPU
 - image sẽ to hơn và build lâu hơn đáng kể

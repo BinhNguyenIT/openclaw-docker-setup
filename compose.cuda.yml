@@ -8,6 +8,7 @@ services:
         INSTALL_CUDA_VERSION: ${OPENCLAW_CUDA_VERSION:-12.8}
     image: ${OPENCLAW_CUDA_IMAGE:-openclaw:cuda-qmd}
     environment:
+      NODE_LLAMA_CPP_GPU: cuda
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: all
     deploy:
@@ -27,5 +28,6 @@ services:
         INSTALL_CUDA_VERSION: ${OPENCLAW_CUDA_VERSION:-12.8}
     image: ${OPENCLAW_CUDA_IMAGE:-openclaw:cuda-qmd}
     environment:
+      NODE_LLAMA_CPP_GPU: cuda
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: all

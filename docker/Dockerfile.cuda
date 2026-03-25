@@ -39,7 +39,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV CUDA_PATH=/usr/local/cuda-${INSTALL_CUDA_VERSION}
 ENV CUDACXX=/usr/local/cuda-${INSTALL_CUDA_VERSION}/bin/nvcc
 ENV PATH=/usr/local/cuda-${INSTALL_CUDA_VERSION}/bin:${PATH}
-ENV LD_LIBRARY_PATH=/usr/local/cuda-${INSTALL_CUDA_VERSION}/lib64:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/usr/local/cuda-${INSTALL_CUDA_VERSION}/lib64:/usr/local/cuda/targets/x86_64-linux/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
+ENV NODE_LLAMA_CPP_GPU=cuda
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 
