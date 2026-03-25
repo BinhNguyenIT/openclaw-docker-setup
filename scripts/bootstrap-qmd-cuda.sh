@@ -16,7 +16,7 @@ MSG
 docker compose "${COMPOSE_FILES[@]}" build openclaw-gateway openclaw-cli
 docker compose "${COMPOSE_FILES[@]}" up -d openclaw-gateway
 
-docker compose "${COMPOSE_FILES[@]}" run --rm openclaw-cli bash -lc '
+docker compose "${COMPOSE_FILES[@]}" run --rm --entrypoint bash openclaw-cli -lc '
   set -euo pipefail
   export HOME=/home/node
   export NODE_LLAMA_CPP_GPU=${NODE_LLAMA_CPP_GPU:-cuda}

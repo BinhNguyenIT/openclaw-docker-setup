@@ -169,8 +169,8 @@ docker compose -f compose.yml -f compose.cuda.yml up -d openclaw-gateway
 Quick verify trong image CUDA:
 
 ```bash
-docker compose -f compose.yml -f compose.cuda.yml run --rm openclaw-cli \
-  node /home/node/.openclaw/tools/qmd/node_modules/.bin/node-llama-cpp inspect gpu
+docker compose -f compose.yml -f compose.cuda.yml run --rm --entrypoint bash openclaw-cli -lc \
+  'node /home/node/.openclaw/tools/qmd/node_modules/.bin/node-llama-cpp inspect gpu'
 ```
 
 Nếu QMD runtime đang sống trong mounted volume `/home/node/.openclaw` và trước đó được cài ở image / môi trường CPU-only, chỉ build image CUDA thôi vẫn chưa đủ. Lúc đó hãy bootstrap lại runtime QMD ngay trong volume sống:
