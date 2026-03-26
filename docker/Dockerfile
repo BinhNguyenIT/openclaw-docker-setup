@@ -4,6 +4,9 @@
 #
 # Nếu sau này cần bake thêm apt packages / browser deps / custom tooling,
 # có thể đổi compose sang build image từ file này.
+#
+# Keep ByteRover CLI (`brv`) here so ClawHub's `byterover` skill actually works
+# after container rebuilds/restarts.
 
 FROM ghcr.io/openclaw/openclaw:2026.3.23-2
 
@@ -14,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     git \
     gh \
+  && npm install -g byterover-cli \
   && chown -R root:root /app/extensions \
   && rm -rf /var/lib/apt/lists/*
 USER node
