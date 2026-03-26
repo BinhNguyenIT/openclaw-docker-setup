@@ -20,6 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     gh \
     sqlite3 \
+    python3 \
+    python-is-python3 \
   && npm install -g byterover-cli @tobilu/qmd \
   && chown -R root:root /app/extensions \
   && rm -rf /var/lib/apt/lists/*
