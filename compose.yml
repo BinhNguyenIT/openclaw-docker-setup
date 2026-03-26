@@ -50,13 +50,7 @@ services:
       - "127.0.0.1:${OLLAMA_PORT:-11434}:11434"
     volumes:
       - ${OLLAMA_DATA_DIR:-./mounts/ollama/data}:/root/.ollama
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+    gpus: all
 
   openclaw-cli:
     build:

@@ -94,17 +94,25 @@ docker compose up -d openclaw-gateway
 
 ### 2.5) (Tuỳ chọn) start Ollama bằng GPU trong Docker
 
-Nếu host Windows + WSL + Docker của bạn đã pass GPU được vào container, repo này có sẵn service `ollama` với `gpus: all`.
+Theo docs Docker của Ollama, NVIDIA GPU path nên dùng Docker GPU runtime trực tiếp (`--gpus=all`). Trong Compose, repo này map tương ứng bằng `gpus: all` trên service `ollama`.
+
+Prereq trên host:
+- NVIDIA driver hoạt động (`nvidia-smi` chạy được trên host)
+- NVIDIA Container Toolkit đã cài
+- Docker runtime đã được cấu hình qua `nvidia-ctk runtime configure --runtime=docker`
+- Docker daemon đã restart sau khi cấu hình runtime
 
 ```bash
 docker compose up -d ollama
 docker exec -it ollama ollama pull nomic-embed-text
+docker exec -it ollama nvidia-smi
 curl http://127.0.0.1:11434/api/tags
 ```
 
 Điểm quan trọng:
 - service `ollama` bind vào `127.0.0.1:${OLLAMA_PORT:-11434}`
 - model data persist ở `./mounts/ollama/data`
+- nếu `docker exec -it ollama nvidia-smi` không thấy GPU thì lỗi nằm ở host Docker/NVIDIA runtime path, không phải riêng model Ollama
 - cấu hình này hợp cho local embedding / memory search mà không cần chạy Ollama thủ công ngoài compose
 
 ### 3) Onboard / cấu hình ban đầu
