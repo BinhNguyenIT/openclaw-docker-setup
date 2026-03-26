@@ -7,6 +7,8 @@
 #
 # Keep ByteRover CLI (`brv`) here so ClawHub's `byterover` skill actually works
 # after container rebuilds/restarts.
+# Keep QMD baked in too: memory_search can still have agent qmd configs/cache/state,
+# and if the `qmd` binary disappears after a rebuild the runtime falls back awkwardly.
 
 FROM ghcr.io/openclaw/openclaw:2026.3.23-2
 
@@ -17,7 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     git \
     gh \
-  && npm install -g byterover-cli \
+    sqlite3 \
+  && npm install -g byterover-cli @tobilu/qmd \
   && chown -R root:root /app/extensions \
   && rm -rf /var/lib/apt/lists/*
 USER node
