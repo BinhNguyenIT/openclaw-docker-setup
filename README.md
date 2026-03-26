@@ -186,6 +186,10 @@ Nếu bạn chỉ cần production memory search ổn định, Ollama path vẫn
 
 Repo này có thể chạy thêm một container **CLIProxyAPI** như sidecar/service phụ để cung cấp endpoint tương thích OpenAI/Gemini/Claude/Codex cho CLI tools.
 
+Nếu bạn muốn thêm một **developer agent** riêng (ví dụ `devbuilder`) để tách implementation work khỏi main assistant, xem thêm:
+
+- `docs/devbuilder-agent.md`
+
 Quick start:
 
 ```bash
@@ -197,6 +201,7 @@ docker compose up -d cli-proxy-api
 Docs chi tiết:
 
 - `docs/cli-proxy-api.md`
+- `docs/devbuilder-agent.md`
 
 Lưu ý: file chạy thật của CLIProxyAPI nên nằm ở `mounts/cli-proxy-api/config/config.yaml` và không cần commit lên repo.
 
