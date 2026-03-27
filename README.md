@@ -7,6 +7,7 @@ Repo Docker/Compose tối giản nhưng **bám docs chính thức** để chạy
 - Dùng **official image**: `ghcr.io/openclaw/openclaw:2026.3.23-2` (mặc định pin version)
 - Tách `openclaw-gateway` và `openclaw-cli` giống flow trong docs
 - Bake sẵn CLI cơ bản (`git`, `gh`) trong custom image để recreate container không phải cài lại
+- Bake sẵn `agent-browser` + Chrome runtime + Linux shared libs để browser automation vẫn chạy sau khi recreate/restart container
 - Persist thêm `/home/node/.config` và `/home/node/.cache` để giữ auth/config/cache qua lần recreate
 - Có thêm **CLIProxyAPI sidecar** và mặc định pin `eceasy/cli-proxy-api:v6.8.51`
 - Persist state bằng bind mounts theo layout dễ nhìn trong repo
@@ -66,6 +67,7 @@ mounts/
   - `./mounts/openclaw/config -> /home/node/.config`
   - `./mounts/openclaw/cache -> /home/node/.cache`
 - Cách này giúp CLI/auth/cache vẫn còn sau khi recreate container.
+- `agent-browser` được bake thẳng vào image cùng browser binaries vì default path `/home/node/.agent-browser` không nằm trong bind mounts hiện tại; nếu không bake thì recreate container sẽ phải cài lại và dễ lỗi shared-library path.
 - `cli-proxy-api` mount riêng config/auth/logs để nhìn service nào dùng gì là rõ ngay khi mở project.
 
 Bên trong `mounts/openclaw/root/` sẽ có luôn `workspace/` và các file state/config khác của OpenClaw.
