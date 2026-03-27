@@ -1,0 +1,47 @@
+# Optional CUDA-enabled image for QMD / node-llama-cpp GPU experiments.
+# Keep this separate from the default image so normal OpenClaw users do not
+# pay the CUDA image-size + build-time tax.
+
+FROM ghcr.io/openclaw/openclaw:2026.3.23-2
+
+ARG NVARCH=x86_64
+ARG INSTALL_CUDA_VERSION=12.8
+
+USER root
+SHELL ["/bin/bash", "-c"]
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    gnupg2 \
+    bash \
+    git \
+    gh \
+    sqlite3 \
+    clang \
+    libgomp1 \
+  && curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/debian12/${NVARCH}/3bf863cc.pub \
+      | gpg --dearmor -o /usr/share/keyrings/nvidia-cuda-archive-keyring.gpg \
+  && echo "deb [signed-by=/usr/share/keyrings/nvidia-cuda-archive-keyring.gpg] https://developer.download.nvidia.com/compute/cuda/repos/debian12/${NVARCH}/ /" \
+      > /etc/apt/sources.list.d/nvidia-cuda.list \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
+    "cuda-cudart-${INSTALL_CUDA_VERSION//./-}" \
+    "cuda-compat-${INSTALL_CUDA_VERSION//./-}" \
+    "cuda-libraries-${INSTALL_CUDA_VERSION//./-}" \
+    "libcusparse-${INSTALL_CUDA_VERSION//./-}" \
+    "libcublas-${INSTALL_CUDA_VERSION//./-}" \
+    "cuda-nvcc-${INSTALL_CUDA_VERSION//./-}" \
+  && npm install -g @tobilu/qmd \
+  && chown -R root:root /app/extensions \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV CUDA_PATH=/usr/local/cuda-${INSTALL_CUDA_VERSION}
+ENV CUDACXX=/usr/local/cuda-${INSTALL_CUDA_VERSION}/bin/nvcc
+ENV PATH=/usr/local/cuda-${INSTALL_CUDA_VERSION}/bin:${PATH}
+ENV LD_LIBRARY_PATH=/usr/local/cuda-${INSTALL_CUDA_VERSION}/lib64:/usr/local/cuda/targets/x86_64-linux/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
+ENV NODE_LLAMA_CPP_GPU=cuda
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=all
+
+USER node

@@ -152,6 +152,51 @@ curl http://127.0.0.1:11434/api/tags
 
 Nếu trong container OpenClaw cần gọi Ollama qua Docker network thay vì host loopback, có thể trỏ endpoint sang hostname service `ollama`.
 
+## Optional CUDA / QMD path
+
+Nếu bạn muốn thử **QMD + node-llama-cpp với GPU** thay vì chỉ dùng Ollama, repo này có thêm path riêng để build image CUDA nặng hơn mà không phá image mặc định.
+
+File liên quan:
+
+- `docker/Dockerfile.cuda`
+- `compose.cuda.yml`
+
+Dùng khi cần:
+
+```bash
+docker compose -f compose.yml -f compose.cuda.yml build openclaw-gateway openclaw-cli
+docker compose -f compose.yml -f compose.cuda.yml up -d openclaw-gateway
+```
+
+Quick verify trong image CUDA:
+
+```bash
+docker compose -f compose.yml -f compose.cuda.yml run --rm --entrypoint bash openclaw-cli -lc \
+  'node /home/node/.openclaw/tools/qmd/node_modules/.bin/node-llama-cpp inspect gpu'
+```
+
+Nếu QMD runtime đang sống trong mounted volume `/home/node/.openclaw` và trước đó được cài ở image / môi trường CPU-only, chỉ build image CUDA thôi vẫn chưa đủ. Lúc đó hãy bootstrap lại runtime QMD ngay trong volume sống:
+
+```bash
+./scripts/bootstrap-qmd-cuda.sh
+```
+
+Script này sẽ:
+- build + start stack theo `compose.cuda.yml`
+- repair chính runtime QMD đang được mount sống ở `/home/node/.openclaw/tools/qmd`
+- tạm dừng `openclaw-gateway` trong lúc rebuild để tránh race condition `qmd ENOENT`
+- reinstall `@tobilu/qmd` trong runtime đó
+- rebuild `node-llama-cpp` trong môi trường CUDA đang chạy
+- chạy lại `node-llama-cpp inspect gpu` để verify
+
+Notes thẳng thắn:
+- path này là **optional / experimental** cho QMD GPU
+- image sẽ to hơn và build lâu hơn đáng kể
+- cần host đã có NVIDIA Container Toolkit / GPU runtime hoạt động tử tế
+- mục tiêu là cung cấp đủ `cuda-cudart`, `cuda-libraries`, `libcublas`, `libcusparse`, `nvcc` để `node-llama-cpp` không còn kẹt ở CPU-only
+
+Nếu bạn chỉ cần production memory search ổn định, Ollama path vẫn là lựa chọn ít drama hơn.
+
 ## CLIProxyAPI add-on
 
 Repo này có thể chạy thêm một container **CLIProxyAPI** như sidecar/service phụ để cung cấp endpoint tương thích OpenAI/Gemini/Claude/Codex cho CLI tools.

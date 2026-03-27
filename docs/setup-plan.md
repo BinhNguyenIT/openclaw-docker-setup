@@ -42,3 +42,10 @@
 - tách riêng project name, container names, port, OpenClaw root path
 - thêm scripts helper cho up/onboard/dashboard/down của instance thứ 2
 - thêm doc ngắn cho flow multi-instance
+
+## Phase 7 - Optional CUDA / QMD path
+- thêm `docker/Dockerfile.cuda` để build image có CUDA runtime/toolkit cho `node-llama-cpp` / QMD
+- thêm `compose.cuda.yml` để opt-in GPU path thay vì nhét CUDA vào image mặc định
+- dùng NVIDIA CUDA Debian repo để cài `cuda-cudart`, `cuda-libraries`, `libcublas`, `libcusparse`, `cuda-nvcc`
+- mục tiêu là cho phép `node-llama-cpp inspect gpu` và QMD thử CUDA đúng nghĩa trong container
+- giữ path này là optional vì image sẽ to hơn và build lâu hơn
