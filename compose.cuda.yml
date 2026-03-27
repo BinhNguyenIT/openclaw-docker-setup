@@ -1,0 +1,31 @@
+services:
+  openclaw-gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.cuda
+      args:
+        NVARCH: ${OPENCLAW_CUDA_NVARCH:-x86_64}
+        INSTALL_CUDA_VERSION: ${OPENCLAW_CUDA_VERSION:-12.8}
+    image: ${OPENCLAW_CUDA_IMAGE:-openclaw:cuda-qmd}
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  openclaw-cli:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.cuda
+      args:
+        NVARCH: ${OPENCLAW_CUDA_NVARCH:-x86_64}
+        INSTALL_CUDA_VERSION: ${OPENCLAW_CUDA_VERSION:-12.8}
+    image: ${OPENCLAW_CUDA_IMAGE:-openclaw:cuda-qmd}
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
